@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexCRM — La plataforma del futuro</title>
+  <style>
+    :root {
+      --bg: #050508;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --cyan: #00f5ff;
+      --purple: #8b5cf6;
+      --pink: #f472b6;
+      --green: #10ffa0;
+      --orange: #ff7b54;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── MESH BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(139,92,246,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 85% 15%, rgba(0,245,255,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 50% 90%, rgba(244,114,182,0.07) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── GRID OVERLAY ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      backdrop-filter: blur(24px) saturate(1.5);
+      background: rgba(5,5,8,0.6);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-left: 8px;
+      vertical-align: middle;
+      -webkit-text-fill-color: var(--cyan);
+      opacity: 0.8;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      color: #000;
+      font-weight: 700;
+      font-size: 0.875rem;
+      padding: 10px 24px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity 0.2s, transform 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(139,92,246,0.12);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 32px;
+    }
+
+    .hero-eyebrow .dot {
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.3); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+      max-width: 900px;
+    }
+
+    .grad-text {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 50%, var(--pink) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% 200%;
+      animation: gradShift 5s ease infinite;
+    }
+
+    @keyframes gradShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 620px;
+      margin-bottom: 40px;
+      line-height: 1.8;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 64px;
+    }
+
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 10px 24px;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* ── STATS BAR ── */
+    .stats {
+      position: relative; z-index: 1;
+      display: flex;
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .stat {
+      flex: 1;
+      padding: 24px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* ── SECTION ── */
+    section {
+      position: relative; z-index: 1;
+      padding: 100px 24px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.8;
+    }
+
+    /* ── FEATURES GRID ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2px;
+      margin-top: 64px;
+      background: var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .feature-card {
+      background: var(--bg);
+      padding: 40px;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent, var(--purple)), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover { background: rgba(255,255,255,0.02); }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 24px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.3px;
+    }
+
+    .feature-card p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 20px;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 50px;
+      border: 1px solid;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── HIGHLIGHT BLOCK ── */
+    .highlight-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 80px;
+    }
+
+    @media (max-width: 768px) {
+      .highlight-row { grid-template-columns: 1fr; }
+    }
+
+    .highlight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .highlight-card .bg-blur {
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      top: -40px; right: -40px;
+    }
+
+    .highlight-card h3 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+
+    .highlight-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+
+    .check-dot {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      flex-shrink: 0;
+    }
+
+    /* ── INTEGRATIONS ── */
+    .integrations-strip {
+      overflow: hidden;
+      margin-top: 80px;
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .integrations-track {
+      display: flex;
+      gap: 48px;
+      animation: scrollLeft 25s linear infinite;
+      width: max-content;
+    }
+
+    @keyframes scrollLeft {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .integration-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+      color: var(--muted);
+    }
+
+    .integration-pill span { font-size: 1.2rem; }
+
+    /* ── PRICING ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 64px;
+    }
+
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(139,92,246,0.4);
+    }
+
+    .pricing-card.featured {
+      border-color: rgba(139,92,246,0.5);
+      background: rgba(139,92,246,0.06);
+    }
+
+    .pricing-card.featured::after {
+      content: 'POPULAR';
+      position: absolute;
+      top: 20px; right: 20px;
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--purple);
+      border: 1px solid rgba(139,92,246,0.5);
+      border-radius: 4px;
+      padding: 3px 8px;
+    }
+
+    .plan-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .plan-price {
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 4px;
+    }
+
+    .plan-price span {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0;
+    }
+
+    .plan-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .plan-features li {
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .plan-features li::before {
+      content: '✦';
+      color: var(--cyan);
+      font-size: 0.6rem;
+    }
+
+    .btn-plan {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .btn-plan:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .btn-plan.featured-btn {
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      border: none;
+      color: #000;
+    }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 120px 24px;
+      overflow: hidden;
+    }
+
+    .cta-glow {
+      position: absolute;
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, rgba(139,92,246,0.25) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      max-width: 700px;
+      margin: 0 auto 24px;
+    }
+
+    .cta-section p {
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 40px;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    footer p { font-size: 0.8rem; color: var(--muted); }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── SCROLL FADE IN ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div>
+      <span class="nav-logo">NexCRM</span>
+      <span class="nav-badge">BETA</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#features">Funciones</a></li>
+      <li><a href="#integrations">Integraciones</a></li>
+      <li><a href="#pricing">Precios</a></li>
+    </ul>
+    <a href="#pricing" class="btn-primary">Empezar gratis →</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      Plataforma todo-en-uno · 2027 ready
+    </div>
+    <h1>El CRM que <span class="grad-text">convierte</span><br/>el caos en crecimiento</h1>
+    <p>Gestiona clientes, vende productos digitales, captura leads de redes sociales y automatiza todo tu negocio desde un solo lugar.</p>
+    <div class="hero-ctas">
+      <a href="#pricing" class="btn-primary">Comenzar gratis — sin tarjeta</a>
+      <a href="#features" class="btn-ghost">Ver todas las funciones</a>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-number" style="color:var(--cyan)">12K+</div>
+        <div class="stat-label">Clientes gestionados</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" style="color:var(--purple)">98%</div>
+        <div class="stat-label">Uptime garantizado</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" style="color:var(--pink)">3.2×</div>
+        <div class="stat-label">Más ventas promedio</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" style="color:var(--green)">40+</div>
+        <div class="stat-label">Integraciones nativas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="fade-in">
+      <div class="section-label">Módulos principales</div>
+      <h2 class="section-title">Todo lo que necesitas,<br/>sin apps extra</h2>
+      <p class="section-sub">Cada módulo está diseñado para trabajar en conjunto. Deja de copiar datos entre herramientas.</p>
+    </div>
+
+    <div class="features-grid fade-in">
+
+      <!-- CRM -->
+      <div class="feature-card" style="--accent: var(--cyan)">
+        <div class="feature-icon" style="background:rgba(0,245,255,0.1); color:var(--cyan)">🧩</div>
+        <h3>CRM · Gestión de Clientes</h3>
+        <p>Pipeline visual con arrastrar y soltar, historial completo de interacciones, scoring de leads con IA y recordatorios automáticos de seguimiento.</p>
+        <div class="feature-tags">
+          <span class="tag" style="color:var(--cyan); border-color:rgba(0,245,255,0.25)">Pipeline Kanban</span>
+          <span class="tag" style="color:var(--cyan); border-color:rgba(0,245,255,0.25)">AI Scoring</span>
+          <span class="tag" style="color:var(--cyan); border-color:rgba(0,245,255,0.25)">Segmentación</span>
+        </div>
+      </div>
+
+      <!-- E-COMMERCE -->
+      <div class="feature-card" style="--accent: var(--purple)">
+        <div class="feature-icon" style="background:rgba(139,92,246,0.1); color:var(--purple)">🛒</div>
+        <h3>E-Commerce Digital</h3>
+        <p>Crea y vende cursos, ebooks, templates, SaaS o accesos premium. Pagos con Stripe, licencias automáticas y área de membresía privada incluida.</p>
+        <div class="feature-tags">
+          <span class="tag" style="color:var(--purple); border-color:rgba(139,92,246,0.25)">Productos digitales</span>
+          <span class="tag" style="color:var(--purple); border-color:rgba(139,92,246,0.25)">Stripe / PayPal</span>
+          <span class="tag" style="color:var(--purple); border-color:rgba(139,92,246,0.25)">Membresías</span>
+        </div>
+      </div>
+
+      <!-- SOCIAL MEDIA -->
+      <div class="feature-card" style="--accent: var(--pink)">
+        <div class="feature-icon" style="background:rgba(244,114,182,0.1); color:var(--pink)">📡</div>
+        <h3>Social Hub · Captura de Leads</h3>
+        <p>Conecta Instagram, TikTok, LinkedIn y Facebook. Captura leads de comentarios, DMs y formularios directamente en tu CRM con clasificación automática.</p>
+        <div class="feature-tags">
+          <span class="tag" style="color:var(--pink); border-color:rgba(244,114,182,0.25)">Instagram / TikTok</span>
+          <span class="tag" style="color:var(--pink); border-color:rgba(244,114,182,0.25)">DM Automation</span>
+          <span class="tag" style="color:var(--pink); border-color:rgba(244,114,182,0.25)">Lead Scoring</span>
+        </div>
+      </div>
+
+      <!-- MARKETING -->
+      <div class="feature-card" style="--accent: var(--orange)">
+        <div class="feature-icon" style="background:rgba(255,123,84,0.1); color:var(--orange)">⚡</div>
+        <h3>Marketing Automation</h3>
+        <p>Flujos de email, WhatsApp y SMS disparados por comportamiento. Construye embudos completos con el editor visual sin código. A/B testing nativo.</p>
+        <div class="feature-tags">
+          <span class="tag" style="color:var(--orange); border-color:rgba(255,123,84,0.25)">Email flows</span>
+          <span class="tag" style="color:var(--orange); border-color:rgba(255,123,84,0.25)">WhatsApp</span>
+          <span class="tag" style="color:var(--orange); border-color:rgba(255,123,84,0.25)">A/B Testing</span>
+        </div>
+      </div>
+
+      <!-- AI ANALYTICS -->
+      <div class="feature-card" style="--accent: var(--green)">
+        <div class="feature-icon" style="background:rgba(16,255,160,0.1); color:var(--green)">🤖</div>
+        <h3>Analytics & AI Insights</h3>
+        <p>Dashboards en tiempo real con predicciones de churn, LTV y conversión generadas por IA. Reportes automáticos que llegan a tu inbox cada lunes.</p>
+        <div class="feature-tags">
+          <span class="tag" style="color:var(--green); border-color:rgba(16,255,160,0.25)">Predicción churn</span>
+          <span class="tag" style="color:var(--green); border-color:rgba(16,255,160,0.25)">LTV forecast</span>
+          <span class="tag" style="color:var(--green); border-color:rgba(16,255,160,0.25)">Real-time</span>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="feature-card" style="--accent: #facc15">
+        <div class="feature-icon" style="background:rgba(250,204,21,0.1); color:#facc15">✍️</div>
+        <h3>Content & Landing Pages</h3>
+        <p>Editor drag-and-drop para crear landing pages de alta conversión, pop-ups y formularios. Publica en tu dominio en minutos, sin programar.</p>
+        <div class="feature-tags">
+          <span class="tag" style="color:#facc15; border-color:rgba(250,204,21,0.25)">Page builder</span>
+          <span class="tag" style="color:#facc15; border-color:rgba(250,204,21,0.25)">Pop-ups</span>
+          <span class="tag" style="color:#facc15; border-color:rgba(250,204,21,0.25)">Custom domain</span>
+        </div>
+      </div>
+
+      <!-- HELPDESK -->
+      <div class="feature-card" style="--accent: #60a5fa">
+        <div class="feature-icon" style="background:rgba(96,165,250,0.1); color:#60a5fa">🎧</div>
+        <h3>Helpdesk & Live Chat</h3>
+        <p>Centraliza todos tus canales de soporte: chat web, email, WhatsApp y redes sociales. Respuestas sugeridas por IA para resolver tickets más rápido.</p>
+        <div class="feature-tags">
+          <span class="tag" style="color:#60a5fa; border-color:rgba(96,165,250,0.25)">Omnicanal</span>
+          <span class="tag" style="color:#60a5fa; border-color:rgba(96,165,250,0.25)">AI replies</span>
+          <span class="tag" style="color:#60a5fa; border-color:rgba(96,165,250,0.25)">SLA tracking</span>
+        </div>
+      </div>
+
+      <!-- TEAMS -->
+      <div class="feature-card" style="--accent: #a78bfa">
+        <div class="feature-icon" style="background:rgba(167,139,250,0.1); color:#a78bfa">👥</div>
+        <h3>Equipos & Colaboración</h3>
+        <p>Asigna clientes y tareas a tu equipo, gestiona permisos por rol y visualiza el rendimiento de cada vendedor en tiempo real desde el manager dashboard.</p>
+        <div class="feature-tags">
+          <span class="tag" style="color:#a78bfa; border-color:rgba(167,139,250,0.25)">Roles & permisos</span>
+          <span class="tag" style="color:#a78bfa; border-color:rgba(167,139,250,0.25)">Tareas</span>
+          <span class="tag" style="color:#a78bfa; border-color:rgba(167,139,250,0.25)">Leaderboard</span>
+        </div>
+      </div>
+
+      <!-- SUBSCRIPTIONS -->
+      <div class="feature-card" style="--accent: var(--cyan)">
+        <div class="feature-icon" style="background:rgba(0,245,255,0.08); color:var(--cyan)">💳</div>
+        <h3>Facturación & Suscripciones</h3>
+        <p>Gestiona suscripciones recurrentes, genera facturas automáticas, controla cobros fallidos y ofrece planes en múltiples divisas sin esfuerzo.</p>
+        <div class="feature-tags">
+          <span class="tag" style="color:var(--cyan); border-color:rgba(0,245,255,0.25)">MRR tracking</span>
+          <span class="tag" style="color:var(--cyan); border-color:rgba(0,245,255,0.25)">Multi-divisa</span>
+          <span class="tag" style="color:var(--cyan); border-color:rgba(0,245,255,0.25)">Facturas PDF</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- HIGHLIGHT CARDS -->
+    <div class="highlight-row fade-in">
+      <div class="highlight-card">
+        <div class="bg-blur" style="background:var(--purple)"></div>
+        <h3>Captura automática desde redes sociales</h3>
+        <p>Cada comentario, DM o formulario de tus redes se convierte en un lead calificado en tu CRM, sin trabajo manual.</p>
+        <ul class="checklist">
+          <li><span class="check-dot" style="background:rgba(139,92,246,0.2); color:var(--purple)">✓</span>Sincronización en tiempo real con Meta, TikTok y LinkedIn</li>
+          <li><span class="check-dot" style="background:rgba(139,92,246,0.2); color:var(--purple)">✓</span>Clasificación automática por intención de compra con IA</li>
+          <li><span class="check-dot" style="background:rgba(139,92,246,0.2); color:var(--purple)">✓</span>Respuesta automática vía DM con flujos personalizados</li>
+          <li><span class="check-dot" style="background:rgba(139,92,246,0.2); color:var(--purple)">✓</span>Atribución de conversiones por canal social</li>
+        </ul>
+      </div>
+      <div class="highlight-card">
+        <div class="bg-blur" style="background:var(--cyan)"></div>
+        <h3>E-Commerce para creadores digitales</h3>
+        <p>Vende lo que creas — cursos, templates, accesos, licencias — con una tienda integrada en tu CRM y cliente vinculado automáticamente.</p>
+        <ul class="checklist">
+          <li><span class="check-dot" style="background:rgba(0,245,255,0.1); color:var(--cyan)">✓</span>Checkout optimizado con 1-click y upsells automáticos</li>
+          <li><span class="check-dot" style="background:rgba(0,245,255,0.1); color:var(--cyan)">✓</span>Entrega digital automática al pagar (PDF, accesos, links)</li>
+          <li><span class="check-dot" style="background:rgba(0,245,255,0.1); color:var(--cyan)">✓</span>Afiliados con dashboard propio y comisiones automáticas</li>
+          <li><span class="check-dot" style="background:rgba(0,245,255,0.1); color:var(--cyan)">✓</span>Carritos abandonados recuperados con flows de email/SMS</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTEGRATIONS -->
+  <section id="integrations" style="padding: 0; max-width:100%; margin:0">
+    <div class="integrations-strip">
+      <div class="integrations-track">
+        <div class="integration-pill"><span>📸</span> Instagram</div>
+        <div class="integration-pill"><span>🎵</span> TikTok</div>
+        <div class="integration-pill"><span>💼</span> LinkedIn</div>
+        <div class="integration-pill"><span>📘</span> Facebook Ads</div>
+        <div class="integration-pill"><span>💬</span> WhatsApp Business</div>
+        <div class="integration-pill"><span>💳</span> Stripe</div>
+        <div class="integration-pill"><span>🟣</span> Twilio</div>
+        <div class="integration-pill"><span>📧</span> Mailchimp</div>
+        <div class="integration-pill"><span>⚡</span> Zapier</div>
+        <div class="integration-pill"><span>🔄</span> n8n</div>
+        <div class="integration-pill"><span>📊</span> Google Analytics</div>
+        <div class="integration-pill"><span>🗓️</span> Google Calendar</div>
+        <div class="integration-pill"><span>📂</span> Google Drive</div>
+        <div class="integration-pill"><span>🤖</span> OpenAI</div>
+        <div class="integration-pill"><span>📸</span> Instagram</div>
+        <div class="integration-pill"><span>🎵</span> TikTok</div>
+        <div class="integration-pill"><span>💼</span> LinkedIn</div>
+        <div class="integration-pill"><span>📘</span> Facebook Ads</div>
+        <div class="integration-pill"><span>💬</span> WhatsApp Business</div>
+        <div class="integration-pill"><span>💳</span> Stripe</div>
+        <div class="integration-pill"><span>🟣</span> Twilio</div>
+        <div class="integration-pill"><span>📧</span> Mailchimp</div>
+        <div class="integration-pill"><span>⚡</span> Zapier</div>
+        <div class="integration-pill"><span>🔄</span> n8n</div>
+        <div class="integration-pill"><span>📊</span> Google Analytics</div>
+        <div class="integration-pill"><span>🗓️</span> Google Calendar</div>
+        <div class="integration-pill"><span>📂</span> Google Drive</div>
+        <div class="integration-pill"><span>🤖</span> OpenAI</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="fade-in" style="text-align:center">
+      <div class="section-label">Planes</div>
+      <h2 class="section-title">Precio justo,<br/>sin sorpresas</h2>
+      <p class="section-sub" style="margin: 0 auto">Empieza gratis. Escala cuando tu negocio lo necesite. Sin contratos anuales obligatorios.</p>
+    </div>
+
+    <div class="pricing-grid fade-in">
+
+      <div class="pricing-card">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$0 <span>/ mes</span></div>
+        <p class="plan-desc">Para probar y lanzar tu primer producto.</p>
+        <ul class="plan-features">
+          <li>500 contactos</li>
+          <li>1 producto digital</li>
+          <li>1 integración social</li>
+          <li>Emails básicos</li>
+          <li>Soporte por email</li>
+        </ul>
+        <button class="btn-plan">Empezar gratis</button>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price"><span style="font-size:1.2rem;color:var(--muted);letter-spacing:0">$</span>49 <span>/ mes</span></div>
+        <p class="plan-desc">Para negocios que quieren crecer en serio.</p>
+        <ul class="plan-features">
+          <li>10,000 contactos</li>
+          <li>Productos ilimitados</li>
+          <li>Todas las redes sociales</li>
+          <li>Marketing automation</li>
+          <li>AI Insights incluido</li>
+          <li>Helpdesk omnicanal</li>
+          <li>5 usuarios en equipo</li>
+        </ul>
+        <button class="btn-plan featured-btn">Empezar con Pro</button>
+      </div>
+
+      <div class="pricing-card">
+        <div class="plan-name">Scale</div>
+        <div class="plan-price"><span style="font-size:1.2rem;color:var(--muted);letter-spacing:0">$</span>149 <span>/ mes</span></div>
+        <p class="plan-desc">Para equipos y negocios de alto volumen.</p>
+        <ul class="plan-features">
+          <li>Contactos ilimitados</li>
+          <li>Usuarios ilimitados</li>
+          <li>White-label disponible</li>
+          <li>API avanzada + webhooks</li>
+          <li>Manager dashboard</li>
+          <li>SLA prioritario 24/7</li>
+          <li>Onboarding personalizado</li>
+        </ul>
+        <button class="btn-plan">Contactar ventas</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-glow"></div>
+    <h2 class="fade-in">Tu negocio merece<br/><span class="grad-text">una sola plataforma</span></h2>
+    <p class="fade-in">Únete a miles de negocios que ya centralizaron su gestión de clientes, ventas y marketing en NexCRM.</p>
+    <div class="fade-in">
+      <a href="#" class="btn-primary" style="font-size:1rem; padding:14px 36px">Crear cuenta gratis →</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2027 NexCRM · Todos los derechos reservados</p>
+    <ul class="footer-links">
+      <li><a href="#">Privacidad</a></li>
+      <li><a href="#">Términos</a></li>
+      <li><a href="#">Documentación</a></li>
+      <li><a href="#">Estado del sistema</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    // Scroll fade-in observer
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
